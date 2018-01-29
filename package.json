@@ -1,0 +1,23 @@
+{
+  "name": "perl-base",
+  "version": "1.0.0",
+  "description": "A full stack app created with Perl, Mojolicious, and Angular",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paige-throck/perl-base.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/paige-throck/perl-base/issues"
+  },
+  "homepage": "https://github.com/paige-throck/perl-base#readme",
+  "dependencies": {
+    "sqlite": "^2.9.1"
+  }
+}
