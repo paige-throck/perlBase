@@ -13,7 +13,7 @@
 
 <h1>MovingDay</h1>
 <p></p>
-  <form action="" method="GET">
+  <form "<%=url_for('insert')->to_abs%>" method="post">
     Name: <input type="text" name="name">
     Password: <input type="text" name="password">
     <input type="submit" value="Create Account">
