@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<head><title>People</title>
+<head><title>MovingDay</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -10,29 +10,15 @@
 </head>
 </head>
 <body>
-  <form action="<%=url_for('insert')->to_abs%>" method="post">
-    Name: <input type="text" name="name">
-    Password: <input type="text" name="password">
+  <div class="container">
+  <div class ="row">
+      <h1>Moving Day</h1>
+  </div>
+%= link_to Login => 'login'
+<p></P>
+%= link_to Create_Account => 'new'
 
-    <input type="submit" value="Add">
-  </form>
-  <br>
-  Data: <br>
-  <table border="1">
-    <tr>
-      <th>Name</th>
-      <th>Password</th>
-
-    </tr>
-    % foreach my $row (@$rows) {
-      <tr>
-        % foreach my $text (@$row) {
-          <td><%= $text %></td>
-        % }
-      </tr>
-    % }
-  </table>
-
+</div>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js" integrity="sha384-vZ2WRJMwsjRMW/8U7i6PWi6AlO1L79snBrmgiDpgIWJ82z8eA5lenwvxbMV1PAh7" crossorigin="anonymous"></script>
 </body>

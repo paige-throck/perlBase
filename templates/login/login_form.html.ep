@@ -10,24 +10,14 @@
 </head>
 </head>
 <body>
-  <form action="<%=url_for('insert')->to_abs%>" method="post">
-    Item: <input type="text" name="item">
-    <input type="submit" value="Add">
+
+<h1>MovingDay</h1>
+<p></p>
+  <form action="" method="GET">
+    Name: <input type="text" name="name">
+    Password: <input type="text" name="password">
+    <input type="submit" value="Login">
   </form>
-  <br>
-  Data: <br>
-  <table border="1">
-    <tr>
-      <th>Item</th>
-    </tr>
-    % foreach my $row (@$rows) {
-      <tr>
-        % foreach my $text (@$row) {
-          <td><%= $text %></td>
-        % }
-      </tr>
-    % }
-  </table>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js" integrity="sha384-vZ2WRJMwsjRMW/8U7i6PWi6AlO1L79snBrmgiDpgIWJ82z8eA5lenwvxbMV1PAh7" crossorigin="anonymous"></script>

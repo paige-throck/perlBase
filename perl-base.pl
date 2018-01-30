@@ -1,9 +1,9 @@
 #!/usr/bin/env perl
 
 use Mojolicious::Lite;
-
-# connect to database
 use DBI;
+
+
 my $dbh = DBI->connect("dbi:SQLite:perl_base.db","","") or die "Could not connect";
 
 # add helper methods for interacting with database
