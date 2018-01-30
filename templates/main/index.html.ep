@@ -11,18 +11,14 @@
 </head>
 <body>
   <form action="<%=url_for('insert')->to_abs%>" method="post">
-    Title: <input type="text" name="title">
-    Body: <input type="text" name="body">
-    Author: <input type="text" name="author">
+    Item: <input type="text" name="item">
     <input type="submit" value="Add">
   </form>
   <br>
   Data: <br>
   <table border="1">
     <tr>
-      <th>Title</th>
-      <th>Body</th>
-      <th>Auhtor</th>
+      <th>Item</th>
     </tr>
     % foreach my $row (@$rows) {
       <tr>

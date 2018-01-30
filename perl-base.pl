@@ -4,38 +4,14 @@ use Mojolicious::Lite;
 
 # connect to database
 use DBI;
-my $dbh = DBI->connect("dbi:SQLite:perlBase.db","","") or die "Could not connect";
+my $dbh = DBI->connect("dbi:SQLite:perl_base.db","","") or die "Could not connect";
 
 # add helper methods for interacting with database
 helper db => sub { $dbh };
 
-helper create_table => sub {
-  my $self = shift;
-  warn "Creating table 'users'\n";
-  $self->db->do('CREATE TABLE users (name varchar(255), password varchar(255));');
-};
 
-helper create_table => sub {
-  my $self = shift;
-  warn "Creating table 'posts'\n";
-  $self->db->do('CREATE TABLE posts (title varchar(255), body varchar(255), author varchar(255));');
-};
 
-helper select => sub {
-  my $self = shift;
-  my $sth = eval { $self->db->prepare('SELECT * FROM posts') } || return undef;
-  $sth->execute;
-  return $sth->fetchall_arrayref;
-};
-
-helper insert => sub {
-  my $self = shift;
-  my ($title, $body, $author) = @_;
-  my $sth = eval { $self->db->prepare('INSERT INTO posts VALUES (?,?,?)') } || return undef;
-  $sth->execute($title, $body, $author);
-  return 1;
-};
-
+#User Table
 helper select => sub {
   my $self = shift;
   my $sth = eval { $self->db->prepare('SELECT * FROM users') } || return undef;
@@ -45,24 +21,67 @@ helper select => sub {
 
 helper insert => sub {
   my $self = shift;
-  my ($name, $password) = @_;
-  my $sth = eval { $self->db->prepare('INSERT INTO users VALUES (?,?)') } || return undef;
-  $sth->execute($name, $password);
+  my ($id, $name, $password) = @_;
+  my $sth = eval { $self->db->prepare('INSERT INTO users VALUES (?,?,?)') } || return undef;
+  $sth->execute($id, $name, $password);
+  return 1;
+};
+
+# To Do List Table
+helper select => sub {
+  my $self = shift;
+  my $sth = eval { $self->db->prepare('SELECT * FROM to_do_list') } || return undef;
+  $sth->execute;
+  return $sth->fetchall_arrayref;
+};
+
+helper insert => sub {
+  my $self = shift;
+  my ($user_id, $item) = @_;
+  my $sth = eval { $self->db->prepare('INSERT INTO to_do_list VALUES (?,?)') } || return undef;
+  $sth->execute($user_id, $item);
+  return 1;
+};
+
+#movers
+helper select => sub {
+  my $self = shift;
+  my $sth = eval { $self->db->prepare('SELECT * FROM movers') } || return undef;
+  $sth->execute;
+  return $sth->fetchall_arrayref;
+};
+
+helper insert => sub {
+  my $self = shift;
+  my ($id, $company, $phone_num, $website) = @_;
+  my $sth = eval { $self->db->prepare('INSERT INTO movers VALUES (?,?,?,?)') } || return undef;
+  $sth->execute($id, $company, $phone_num, $website);
+  return 1;
+};
+
+# Moving_Day table
+
+helper select => sub {
+  my $self = shift;
+  my $sth = eval { $self->db->prepare('SELECT * FROM moving_day') } || return undef;
+  $sth->execute;
+  return $sth->fetchall_arrayref;
+};
+
+helper insert => sub {
+  my $self = shift;
+  my ($user_id, $mover_id, $new_address, $date) = @_;
+  my $sth = eval { $self->db->prepare('INSERT INTO moving_day VALUES (?,?,?,?)') } || return undef;
+  $sth->execute($user_id, $mover_id, $new_address, $date);
   return 1;
 };
 
 # if statement didn't prepare, assume its because the table doesn't exist
-app->select || app->create_table;
+app->select
 
-any '/login' => sub {
-  my $self = shift;
-  my $rows = $self->select;
-  $self->stash( rows => $rows );
-  $self->render('login/login');
-};
 
 # setup base routes
-any '/posts' => sub {
+any '/' => sub {
   my $self = shift;
   my $rows = $self->select;
   $self->stash( rows => $rows );
@@ -71,20 +90,25 @@ any '/posts' => sub {
 
 any '/insert' => sub {
   my $self = shift;
-  my $name = $self->param('name');
-  my $password = $self->param('password');
-  my $insert = $self->insert($name, $password);
+  my $item = $self->param('item');
+  my $insert = $self->insert($item);
   $self->redirect_to('/');
 };
 
-# setup route which receives data and returns to /
-any '/insert' => sub {
+any '/new' => sub {
   my $self = shift;
-  my $title = $self->param('title');
-  my $body = $self->param('body');
-  my $author = $self->param('author');
-  my $insert = $self->insert($title, $body, $author);
-  $self->redirect_to('login/login');
+  my $rows = $self->select;
+  $self->stash( rows => $rows );
+  $self->render('login/login');
+};
+
+any '/new/insert' => sub {
+  my $self = shift;
+  my $id = $self->param('id');
+  my $name = $self->param('name');
+  my $password = $self->param('password');
+  my $insert = $self->insert($id, $name, $password);
+  $self->redirect_to('/');
 };
 
 app->start;
