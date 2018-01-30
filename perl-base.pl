@@ -9,8 +9,6 @@ my $dbh = DBI->connect("dbi:SQLite:perl_base.db","","") or die "Could not connec
 # add helper methods for interacting with database
 helper db => sub { $dbh };
 
-
-
 #User Table
 helper select => sub {
   my $self = shift;
@@ -80,7 +78,7 @@ helper insert => sub {
 app->select
 
 
-# setup base routes
+# setup base routes;
 any '/' => sub {
   my $self = shift;
   my $rows = $self->select;
