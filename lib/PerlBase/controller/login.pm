@@ -19,7 +19,6 @@ sub register {
     password => $self->param('password'),
     name     => $self->param('name'),
   };
-  print $user;
   warn Mojo::Util::dumper $user;
   unless(eval { $self->model->add_user($user); 1 }) {
     $self->app->log->error($@) if $@;

@@ -10,7 +10,7 @@ sub show_add {
 sub do_add {
   my $self = shift;
   my %item = (
-    user_item => $self->param('user_item'),
+    item => $self->param('item'),
     completed => 0,
   );
   $self->model->add_item($self->user, \%item);

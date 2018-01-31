@@ -6,11 +6,6 @@ use Mojo::SQLite;
 use LinkEmbedder;
 use PerlBase::Model;
 
-# has dist_dir => sub {
-#   return Mojo::File->new(
-#     File::Share::dist_dir('PerlBase')
-#   );
-# };
 
 has sqlite => sub {
   my $app = shift;
@@ -46,10 +41,6 @@ sub startup {
   if (my $secrets = $app->config->{secrets}) {
     $app->secrets($secrets);
   }
-
-  # $app->renderer->paths([
-  #   $app->dist_dir->child('templates'),
-  # ]);
 
 
   $app->helper(link => sub {

@@ -1,11 +1,6 @@
 -- 1 up
 PRAGMA foreign_keys = ON;
 
--- create table users (
---   id integer primary key autoincrement,
---   username text not null unique,
---   password text not null unique
--- );
 
 CREATE TABLE users (
   id integer primary key autoincrement,
@@ -13,6 +8,8 @@ CREATE TABLE users (
   username text not null unique,
   password text not null,
 );
+
+
 
 
 create table items (
