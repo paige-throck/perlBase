@@ -1,4 +1,4 @@
-% title 'Welcome to the Wishlist!';
+% title 'MovingDay';
 % layout 'default';
 
 <h2><%= title %></h2>
@@ -19,4 +19,4 @@
 % end
 </p>
 
-<p>Or <%= link_to register => 'show_register' %> for an account.</p>
+<p><%= link_to Register => 'show_register' %> for a new account.</p>

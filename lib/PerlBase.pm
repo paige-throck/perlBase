@@ -6,10 +6,16 @@ use Mojo::SQLite;
 use LinkEmbedder;
 use PerlBase::Model;
 
+# has dist_dir => sub {
+#   return Mojo::File->new(
+#     File::Share::dist_dir('PerlBase')
+#   );
+# };
+
 has sqlite => sub {
   my $app = shift;
 
-  # determine the storage location
+  # Database storage
   my $file = $app->config->{database} || 'perlBase.db';
   unless ($file =~ /^:/) {
     $file = Mojo::File->new($file);
@@ -25,7 +31,7 @@ has sqlite => sub {
   # attach migrations file
   $sqlite->migrations->from_file(
     $app->home->child('perlBase.sql')
-  )->username('perlBase');
+  )->name('perlBase');
 
   return $sqlite;
 };
@@ -41,9 +47,10 @@ sub startup {
     $app->secrets($secrets);
   }
 
-  $app->renderer->paths([
-    $app->dist_dir->child('templates'),
-  ]);
+  # $app->renderer->paths([
+  #   $app->dist_dir->child('templates'),
+  # ]);
+
 
   $app->helper(link => sub {
     my $self = shift;
