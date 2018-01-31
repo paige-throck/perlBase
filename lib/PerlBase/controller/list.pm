@@ -3,16 +3,15 @@ use Mojo::Base 'Mojolicious::Controller';
 
 sub show_add {
   my $self = shift;
-  my $link = $self->link($self->param('url'));
-  $self->render('add', link => $link);
+  my $item =
+  $self->render('add', item => $item);
 }
 
 sub do_add {
   my $self = shift;
   my %item = (
-    title => $self->param('title'),
-    url => $self->param('url'),
-    purchased => 0,
+    user_item => $self->param('user_item'),
+    completed => 0,
   );
   $self->model->add_item($self->user, \%item);
   $self->redirect_to('/');
@@ -22,9 +21,9 @@ sub update {
   my $self = shift;
   $self->model->update_item(
     {id => $self->param('id')},
-    $self->param('purchased')
+    $self->param('completed')
   );
-  $self->redirect_to('list', name => $self->param('name'));
+  $self->redirect_to('list', username => $self->param('username'));
 }
 
 sub remove {

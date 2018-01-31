@@ -1,9 +1,10 @@
 % title 'MovingDay';
 % layout 'default';
 
+
 %= form_for 'login' => (method => 'POST', class => 'form-inline') => begin
   <div class="form-group">
-    <label>Tell us your name to get started</label>
-    <input name="name" class="form-control">
+    <label>Username</label>
+    <input name="username" class="form-control">
   </div>
 % end

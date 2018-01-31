@@ -18,8 +18,7 @@
     </div>
     <div class="panel-body">
       %= form_for 'add' => (method => 'POST') => begin
-        %= hidden_field title => $link->title
-        %= hidden_field url => $link->url
+        %= hidden_field item => $item
         <input type="submit" value="Yes" class="btn btn-default">
         %= link_to 'No' => '/', (class => 'btn btn-default')
       % end
@@ -30,6 +29,6 @@
 
 <div class="panel panel-default">
   <div id="item-detail" class="panel-body">
-    <%== $link->html %>
+    <%== $item %>
   </div>
 </div>

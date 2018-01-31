@@ -1,43 +1,57 @@
-% title user->{name} . "'s List";
+% title user->{username} . "'s Moving List";
 % layout 'default';
 
 % content_for 'sidebar' => begin
-  %= include 'partial/user_list'
-  %= include 'partial/add_url'
+  %= include 'partial/mover_list'
+  %= include 'partial/add_item'
   %= include 'partial/log_out'
 % end
 
-<h2><%= title %></h2>
+<h2><center><%= title %></center></h2>
 
 <table class="table">
   <thead>
     <tr>
-      <td>Title</td>
-      <td>Link</td>
-      <td>Action</td>
+      <td>Moving Date</td>
+      <td>Moving Company</td>
+      <td>New Address</td>
+    </td>
+  </thead>
+  <tbody>
+    <tr>
+    </tr>
+  </tbody>
+</table>
+
+<h4>To Do List</h4>
+<table class="table">
+  <thead>
+    <tr>
+      <td>Item</td>
+      <td>Completed</td>
     </td>
   </thead>
   <tbody>
   % for my $key (sort keys %{ user->{items} }) {
     % my $item = user->{items}{$key};
     <tr>
-      %= t td => $item->{title}
-      %= t td => link_to $item->{url} => $item->{url}
-      % if (session->{name} eq user->{name}) {
+      %= t td => $item->{item}
+      % if (session->{username} eq user->{username}) {
         %= t td => form_for 'remove' => begin
-          %= hidden_field title => $key
+          %= hidden_field item => $key
           <input type="submit" value="Remove" class="btn btn-default">
+          <input type="submit" value="Edit" class="btn btn-default">
         % end
       % } else {
         %= t td => form_for 'update' => begin
-          %= hidden_field user  => user->{name}
-          %= hidden_field title => $key
-          % if ($item->{purchased}) {
-            %= hidden_field purchased => 0
-            <input type="submit" value="Mark Not Purchased" class="btn btn-default">
+          %= hidden_field user  => user->{username}
+          %= hidden_field item => $key
+          % if ($item->{completed}) {
+            %= hidden_field completed => 0
+            <input type="submit" value="Mark Not Completed" class="btn btn-default">
           % } else {
-            %= hidden_field purchased => 1
-            <input type="submit" value="Mark Purchased" class="btn btn-default">
+            %= hidden_field completed => 1
+            <input type="submit" value="Mark Completed" class="btn btn-default">
           % }
         % end
       % }

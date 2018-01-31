@@ -2,7 +2,7 @@
 <html>
 <head><title>People</title>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta username="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="x-ua-compatible" content="ie=edge">
 
 
@@ -14,8 +14,8 @@
 <h1>MovingDay</h1>
 <p></p>
   <form "<%=url_for('insert')->to_abs%>" method="post">
-    Name: <input type="text" name="name">
-    Password: <input type="text" name="password">
+    username: <input type="text" username="username">
+    Password: <input type="text" username="password">
     <input type="submit" value="Create Account">
   </form>
 

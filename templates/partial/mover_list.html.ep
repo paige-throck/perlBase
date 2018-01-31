@@ -1,11 +1,11 @@
 <div class="panel panel-default">
   <div class="panel-heading">
-    Users' Lists
+    Movers' Lists
   </div>
   <div class="panel-body">
     <ul class="nav nav-pills nav-stacked">
-      % for my $name (sort keys %{ users() }) {
-        %= t li => link_to $name => list => {name => $name}
+    % for my $key (sort keys %{ user->{movers} }) {
+      % my $mover = user->{items}{$key};
       % }
     </ul>
   </div>

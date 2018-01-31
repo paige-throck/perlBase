@@ -6,60 +6,59 @@ use Carp ();
 has sqlite => sub { Carp::croak 'sqlite is required' };
 
 sub add_user {
-  my ($self, $name) = @_;
+  my ($self, $username) = @_;
   return $self
     ->sqlite
     ->db
     ->insert(
       'users',
-      {name => $name},
+      {username => $username},
     )->last_insert_id;
 }
 
 sub user {
-  my ($self, $name) = @_;
+  my ($self, $username) = @_;
   my $sql = <<'  SQL';
     select
       user.id,
-      user.name,
+      user.username,
       (
         select
           json_group_array(item)
         from (
           select json_object(
             'id',        items.id,
-            'title',     items.title,
-            'url',       items.url,
-            'purchased', items.purchased
+            'item',     items.item,
+            'completed', items.completed
           ) as item
           from items
           where items.user_id=user.id
         )
       ) as items
     from users user
-    where user.name=?
+    where user.username=?
   SQL
   return $self
     ->sqlite
     ->db
-    ->query($sql, $name)
+    ->query($sql, $username)
     ->expand(json => 'items')
     ->hash;
 }
 
-sub list_user_names {
-  my $self = shift;
-  return $self
-    ->sqlite
-    ->db
-    ->select(
-      'users' => ['name'],
-      undef,
-      {-asc => 'name'},
-    )
-    ->arrays
-    ->map(sub{ $_->[0] });
-}
+# sub list_user_usernames {
+#   my $self = shift;
+#   return $self
+#     ->sqlite
+#     ->db
+#     ->select(
+#       'users' => ['username'],
+#       undef,
+#       {-asc => 'username'},
+#     )
+#     ->arrays
+#     ->map(sub{ $_->[0] });
+# }
 
 sub add_item {
   my ($self, $user, $item) = @_;
@@ -72,13 +71,13 @@ sub add_item {
 }
 
 sub update_item {
-  my ($self, $item, $purchased) = @_;
+  my ($self, $item, $selfompleted) = @_;
   return $self
     ->sqlite
     ->db
     ->update(
       'items',
-      {purchased => $purchased},
+      {completed => $selfompleted},
       {id => $item->{id}},
     )->rows;
 }
