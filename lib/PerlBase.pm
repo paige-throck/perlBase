@@ -10,10 +10,10 @@ sub startup {
   my $self = shift;
 
   # Load configuration from hash returned by "my_app.conf"
-  my $config = $self->plugin('Config');
+  my $selfonfig = $self->plugin('Config');
 
   # Documentation browser under "/perldoc"
-  $self->plugin('PODRenderer') if $config->{perldoc};
+  $self->plugin('PODRenderer') if $selfonfig->{perldoc};
 
   # Router
   my $r = $self->routes;
