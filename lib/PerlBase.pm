@@ -19,7 +19,7 @@ has sqlite => sub {
   }
 
   my $sqlite = Mojo::SQLite->new
-    ->from_fileusername("$file")
+    ->from_filename("$file")
     ->auto_migrate(1);
 
   # attach migrations file
@@ -41,6 +41,10 @@ sub startup {
     $app->secrets($secrets);
   }
 
+  $app->renderer->paths([
+    $app->dist_dir->child('templates'),
+  ]);
+
   $app->helper(link => sub {
     my $self = shift;
     state $le = LinkEmbedder->new;
@@ -56,22 +60,14 @@ sub startup {
 
   $app->helper(user => sub {
     my ($self, $username) = @_;
-    $name ||= $self->stash->{username} || $self->session->{username};
+    $username ||= $self->stash->{username} || $self->session->{username};
     return {} unless $username;
-
-    my $model = $self->model;
-    my $user = $model->user($username);
-    unless ($user) {
-      $model->add_user($username);
-      $user = $model->user($username);
-    }
-    return $user;
+    return $self->model->user($username) || {};
   });
-
 
   $app->helper(users => sub {
     my $self = shift;
-    return $self->model->list_user_usernames;
+    return $self->model->all_users;
   });
 
   my $r = $app->routes;
@@ -81,16 +77,18 @@ sub startup {
     $self->render($template);
   });
 
-  $r->get('/list/:username')->to(template => 'list')->username('list');
+  $r->get('/list/:username')->to(template => 'list')->name('list');
 
-  $r->get('/add')->to('List#show_add')->username('show_add');
-  $r->post('/add')->to('List#do_add')->username('do_add');
+  $r->get('/add')->to('List#show_add')->name('show_add');
+  $r->post('/add')->to('List#do_add')->name('do_add');
 
-  $r->post('/update')->to('List#update')->username('update');
-  $r->post('/remove')->to('List#remove')->username('remove');
+  $r->post('/update')->to('List#update')->name('update');
+  $r->post('/remove')->to('List#remove')->name('remove');
 
-  $r->post('/login')->to('Access#login')->username('login');
-  $r->any('/logout')->to('Access#logout')->username('logout');
+  $r->get('/register')->to(template => 'register')->name('show_register');
+  $r->post('/register')->to('Login#register')->name('do_register');
+  $r->post('/login')->to('Login#login')->name('login');
+  $r->any('/logout')->to('Login#logout')->name('logout');
 
 }
 

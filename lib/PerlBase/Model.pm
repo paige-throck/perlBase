@@ -2,18 +2,37 @@ package PerlBase::Model;
 use Mojo::Base -base;
 
 use Carp ();
+use Passwords ();
 
 has sqlite => sub { Carp::croak 'sqlite is required' };
 
 sub add_user {
-  my ($self, $username) = @_;
+  my ($self, $user) = @_;
+  Carp::croak 'password is required'
+    unless $user->{password};
+  $user->{password} = Passwords::password_hash($user->{password});
   return $self
     ->sqlite
     ->db
-    ->insert(
-      'users',
+    ->insert(users => $user)
+    ->last_insert_id;
+}
+
+sub check_password {
+  my ($self, $username, $password) = @_;
+  return undef unless $password;
+  my $user = $self
+    ->sqlite
+    ->db
+    ->select(
+      'users' => ['password'],
       {username => $username},
-    )->last_insert_id;
+    )->hash;
+  return undef unless $user;
+  return Passwords::password_verify(
+    $password,
+    $user->{password},
+  );
 }
 
 sub user {
@@ -21,6 +40,7 @@ sub user {
   my $sql = <<'  SQL';
     select
       user.id,
+      user.name,
       user.username,
       (
         select
@@ -28,7 +48,7 @@ sub user {
         from (
           select json_object(
             'id',        items.id,
-            'item',     items.item,
+            'item',       items.item,
             'completed', items.completed
           ) as item
           from items
@@ -46,19 +66,18 @@ sub user {
     ->hash;
 }
 
-# sub list_user_usernames {
-#   my $self = shift;
-#   return $self
-#     ->sqlite
-#     ->db
-#     ->select(
-#       'users' => ['username'],
-#       undef,
-#       {-asc => 'username'},
-#     )
-#     ->arrays
-#     ->map(sub{ $_->[0] });
-# }
+sub all_users {
+  my $self = shift;
+  return $self
+    ->sqlite
+    ->db
+    ->select(
+      'users' => [qw/username name/],
+      undef,
+      {-asc => 'name'},
+    )
+    ->hashes;
+}
 
 sub add_item {
   my ($self, $user, $item) = @_;
@@ -71,13 +90,13 @@ sub add_item {
 }
 
 sub update_item {
-  my ($self, $item, $selfompleted) = @_;
+  my ($self, $item, $completed) = @_;
   return $self
     ->sqlite
     ->db
     ->update(
       'items',
-      {completed => $selfompleted},
+      {completed => $completed},
       {id => $item->{id}},
     )->rows;
 }
