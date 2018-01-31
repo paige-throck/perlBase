@@ -1,42 +1,95 @@
 package PerlBase;
 use Mojo::Base 'Mojolicious';
-use DBI;
 
-my $dbh = DBI->connect("dbi:SQLite:perl_base.db","","") or die "Could not connect";
-helper db => sub { $dbh };
+use Mojo::File;
+use Mojo::SQLite;
+use LinkEmbedder;
+use PerlBase::Model;
 
+has sqlite => sub {
+  my $app = shift;
+
+  # determine the storage location
+  my $file = $app->config->{database} || 'perlBase.db';
+  unless ($file =~ /^:/) {
+    $file = Mojo::File->new($file);
+    unless ($file->is_abs) {
+      $file = $app->home->child("$file");
+    }
+  }
+
+  my $sqlite = Mojo::SQLite->new
+    ->from_filename("$file")
+    ->auto_migrate(1);
+
+  # attach migrations file
+  $sqlite->migrations->from_file(
+    $app->home->child('perlBase.sql')
+  )->name('perlBase');
+
+  return $sqlite;
+};
 
 sub startup {
-  my $self = shift;
+  my $app = shift;
 
-  # Load configuration from hash returned by "my_app.conf"
-  my $selfonfig = $self->plugin('Config');
+  $app->plugin('Config' => {
+    default => {},
+  });
 
-  # Documentation browser under "/perldoc"
-  $self->plugin('PODRenderer') if $selfonfig->{perldoc};
+  if (my $secrets = $app->config->{secrets}) {
+    $app->secrets($secrets);
+  }
 
-  # Router
-  my $r = $self->routes;
+  $app->helper(link => sub {
+    my $self = shift;
+    state $le = LinkEmbedder->new;
+    return $le->get(@_);
+  });
 
-   # Homepage routes
-  $r->get('/')->to(template => 'home/index');
+  $app->helper(model => sub {
+    my $self = shift;
+    return Wishlist::Model->new(
+      sqlite => $self->app->sqlite,
+    );
+  });
 
-  # Login routes
-  $r->get('/login')->name('login_form')->to(template => 'login/login_form');
+  $app->helper(user => sub {
+    my ($self, $name) = @_;
+    $name ||= $self->stash->{name} || $self->session->{name};
+    return {} unless $name;
 
+    my $model = $self->model;
+    my $user = $model->user($name);
+    unless ($user) {
+      $model->add_user($name);
+      $user = $model->user($name);
+    }
+    return $user;
+  });
 
-# New user routes
-  $r->get('/new')->name('new')->to(template => 'new-login/new');
+  $app->helper(users => sub {
+    my $self = shift;
+    return $self->model->list_user_names;
+  });
 
-  $r->post('/user')->to('user#create');
+  my $r = $app->routes;
+  $r->get('/' => sub {
+    my $self = shift;
+    my $template = $self->session->{name} ? 'list' : 'login';
+    $self->render($template);
+  });
 
-  #List Routes and User Moving Day info
-  $r->get('/list')->name('to-do-list')->to(template => 'to-do-list/list');
+  $r->get('/list/:name')->to(template => 'list')->name('list');
 
+  $r->get('/add')->to('List#show_add')->name('show_add');
+  $r->post('/add')->to('List#do_add')->name('do_add');
 
+  $r->post('/update')->to('List#update')->name('update');
+  $r->post('/remove')->to('List#remove')->name('remove');
 
-  # Movers Routes
-  $r->get('/movers')->name('movers')->to(template => 'movers/movers');
+  $r->post('/login')->to('Access#login')->name('login');
+  $r->any('/logout')->to('Access#logout')->name('logout');
 
 }
 

@@ -1,9 +1,6 @@
 % title 'MovingDay';
 % layout 'default';
 
-
-<h2><%= title %></h2>
-
 %= form_for 'login' => (method => 'POST', class => 'form-inline') => begin
   <div class="form-group">
     <label>Tell us your name to get started</label>
