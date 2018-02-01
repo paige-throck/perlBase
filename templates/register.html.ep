@@ -19,7 +19,7 @@
     <label>Password</label>
     <input name="password" type="password" class="form-control">
   </div>
-  <input type="submit" value="Register" class="btn btn-primary">
+  <input type="submit" value="register" class="btn btn-primary">
   %= link_to 'Cancel' => '/', (class => 'btn btn-default')
 % end
 </p>

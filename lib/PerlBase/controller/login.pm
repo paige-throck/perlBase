@@ -20,7 +20,8 @@ sub register {
     name     => $self->param('name'),
   };
   warn Mojo::Util::dumper $user;
-  unless(eval { $self->model->add_user($user); 1 }) {
+  unless(eval {
+    $self->model->add_user($user); 1 }) {
     $self->app->log->error($@) if $@;
     return $self->render(text => 'Could not create user', status => 400);
   }

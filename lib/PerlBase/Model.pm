@@ -6,6 +6,7 @@ use Passwords ();
 
 has sqlite => sub { Carp::croak 'sqlite is required' };
 
+
 sub add_user {
   my ($self, $user) = @_;
   Carp::croak 'password is required'
@@ -40,7 +41,6 @@ sub user {
   my $sql = <<'  SQL';
     select
       user.id,
-      user.name,
       user.username,
       (
         select
@@ -48,8 +48,8 @@ sub user {
         from (
           select json_object(
             'id',        items.id,
-            'item',       items.item,
-            'completed', items.completed
+            'item',     items.item,
+            'completed',        items.completed
           ) as item
           from items
           where items.user_id=user.id
@@ -64,8 +64,8 @@ sub user {
     ->query($sql, $username)
     ->expand(json => 'items')
     ->hash;
-}
 
+}
 sub all_users {
   my $self = shift;
   return $self

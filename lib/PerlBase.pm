@@ -16,19 +16,10 @@ has sqlite => sub {
     $file = Mojo::File->new($file);
     unless ($file->is_abs) {
       $file = $app->home->child("$file");
+      print $file
     }
   }
 
-  my $sqlite = Mojo::SQLite->new
-    ->from_filename("$file")
-    ->auto_migrate(1);
-
-  # attach migrations file
-  $sqlite->migrations->from_file(
-    $app->home->child('perlBase.sql')
-  )->name('perlBase');
-
-  return $sqlite;
 };
 
 sub startup {
@@ -41,7 +32,6 @@ sub startup {
   if (my $secrets = $app->config->{secrets}) {
     $app->secrets($secrets);
   }
-
 
   $app->helper(link => sub {
     my $self = shift;
@@ -62,6 +52,7 @@ sub startup {
     return {} unless $username;
     return $self->model->user($username) || {};
   });
+
 
   $app->helper(users => sub {
     my $self = shift;
